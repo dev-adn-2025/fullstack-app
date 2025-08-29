@@ -1,6 +1,13 @@
+import os
 import jwt
 from datetime import datetime, timedelta
 from functools import wraps
+from flask import Blueprint, request, jsonify
+from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.orm import Session
+from .models import Cliente, Proyecto, Base
+from sqlalchemy import create_engine
+
 from dotenv import load_dotenv
 load_dotenv()
 
@@ -8,6 +15,12 @@ JWT_SECRET = os.getenv("JWT_SECRET", "supersecretkey")
 JWT_ALGORITHM = "HS256"
 JWT_EXP_DELTA = int(os.getenv("JWT_EXP_DELTA", "3600"))  # segundos
 JWT_REFRESH_DELTA = int(os.getenv("JWT_REFRESH_DELTA", "86400"))  # segundos
+
+# API versioning
+bp = Blueprint("api_v1", __name__, url_prefix="/api/v1")
+DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost:5432/appdb")
+engine = create_engine(DATABASE_URL)
+Base.metadata.create_all(engine)
 
 # Decorador para proteger endpoints
 def token_required(f):
@@ -80,19 +93,6 @@ def refresh():
     except jwt.InvalidTokenError:
         return jsonify({"error": "Token inválido"}), 401
 
-
-from flask import Blueprint, request, jsonify
-from werkzeug.security import generate_password_hash, check_password_hash
-from sqlalchemy.orm import Session
-from .models import Cliente, Proyecto, Base
-from sqlalchemy import create_engine
-import os
-
-# API versioning
-bp = Blueprint("api_v1", __name__, url_prefix="/api/v1")
-DATABASE_URL = os.getenv("DATABASE_URL", "postgresql://user:password@localhost:5432/appdb")
-engine = create_engine(DATABASE_URL)
-Base.metadata.create_all(engine)
 
 from contextlib import contextmanager
 @contextmanager
