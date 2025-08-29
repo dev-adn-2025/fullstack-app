@@ -12,6 +12,8 @@ python = "^3.11"
 flask = "^2.3"
 sqlalchemy = "^2.0"
 psycopg2-binary = "^2.9"
+pyjwt = "^2.10.1"
+python-dotenv = "^1.1.1"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.0"
